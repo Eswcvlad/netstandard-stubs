@@ -1231,7 +1231,8 @@ class IPAddress:
     IPv6Loopback : IPAddress
     IPv6None : IPAddress
     Loopback : IPAddress
-    None : IPAddress
+    # FIXME: "None" is a reserved keyword
+    # None : IPAddress
     @property
     def Address(self) -> int: ...
     @Address.setter

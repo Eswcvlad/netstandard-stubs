@@ -3187,7 +3187,8 @@ class ToolboxItemAttribute(Attribute):
     @typing.overload
     def __init__(self, toolboxItemTypeName: str) -> None: ...
     Default : ToolboxItemAttribute
-    None : ToolboxItemAttribute
+    # FIXME: "None" is a reserved keyword
+    # None : ToolboxItemAttribute
     @property
     def ToolboxItemType(self) -> typing.Type[typing.Any]: ...
     @property

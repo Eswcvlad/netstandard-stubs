@@ -108,10 +108,12 @@ class SqlBinary(IXmlSerializable, IComparable_0, INullable):
 class SqlBoolean(IXmlSerializable, IComparable_0, INullable):
     # Constructor .ctor(value : Int32) was skipped since it collides with above method
     def __init__(self, value: bool) -> None: ...
-    False : SqlBoolean
+    # FIXME: "False" is a reserved keyword
+    # False : SqlBoolean
     Null : SqlBoolean
     One : SqlBoolean
-    True : SqlBoolean
+    # FIXME: "True" is a reserved keyword
+    # True : SqlBoolean
     Zero : SqlBoolean
     @property
     def ByteValue(self) -> int: ...
