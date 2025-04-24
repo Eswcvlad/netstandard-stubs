@@ -519,13 +519,33 @@ class CreateObjectFlags(typing.SupportsInt):
 
 
 class CriticalHandle(CriticalFinalizerObject, IDisposable):
+    """Represents a wrapper class for handle resources."""
+
     @property
-    def IsClosed(self) -> bool: ...
+    def IsClosed(self) -> bool:
+        """Gets a value indicating whether the handle is closed.
+        :return: ``True`` if the handle is closed; otherwise, ``False``."""
+        ...
+
     @property
-    def IsInvalid(self) -> bool: ...
-    def Close(self) -> None: ...
-    def Dispose(self) -> None: ...
-    def SetHandleAsInvalid(self) -> None: ...
+    @abc.abstractmethod
+    def IsInvalid(self) -> bool:
+        """When overridden in a derived class, gets a value indicating whether
+        the handle value is invalid.
+        :return: ``True`` if the handle is valid; otherwise, ``False``."""
+        ...
+
+    def Close(self) -> None:
+        """Marks the handle for releasing and freeing resources."""
+        ...
+
+    def Dispose(self) -> None:
+        """Releases all resources used by the ``CriticalHandle``."""
+        ...
+
+    def SetHandleAsInvalid(self) -> None:
+        """Marks a handle as invalid."""
+        ...
 
 
 class CULong(IEquatable_1[CULong]):
@@ -2260,115 +2280,238 @@ class SafeArrayTypeMismatchException(SystemException):
 
 
 class SafeBuffer(SafeHandleZeroOrMinusOneIsInvalid):
-    @property
-    def ByteLength(self) -> int: ...
-    @property
-    def IsClosed(self) -> bool: ...
-    @property
-    def IsInvalid(self) -> bool: ...
-    def AcquirePointer(self, pointer: clr.Reference[clr.Reference[int]]) -> None: ...
-    def ReleasePointer(self) -> None: ...
-    # Skipped Initialize due to it being static, abstract and generic.
+    """Provides a controlled memory buffer that can be used for reading and
+    writing. Attempts to access memory outside the controlled buffer
+    (underruns and overruns) raise exceptions."""
 
-    Initialize : Initialize_MethodGroup
+    @property
+    def ByteLength(self) -> int:
+        """Gets the size of the buffer, in bytes.
+        :return: The number of bytes in the memory buffer.
+        :raises InvalidOperationException: The ``Initialize`` method has not
+            been called.
+        """
+        ...
+
+    def AcquirePointer(self, pointer: clr.Reference[clr.Reference[int]]) -> None:
+        """Obtains a pointer from a ``SafeBuffer`` object for a block of
+        memory.
+        :param pointer: A byte pointer, passed by reference, to receive the
+            pointer from within the ``SafeBuffer`` object. You must set this
+            pointer to ``None`` before you call this method.
+        :raises InvalidOperationException: The ``Initialize`` method has not
+            been called.
+        """
+        ...
+
+    Initialize: Initialize_MethodGroup
+
     class Initialize_MethodGroup:
-        def __getitem__(self, t:typing.Type[Initialize_1_T1]) -> Initialize_1[Initialize_1_T1]: ...
+        def __getitem__(self, t: typing.Type[Initialize_1_T1]) -> Initialize_1[Initialize_1_T1]: ...
 
         Initialize_1_T1 = typing.TypeVar('Initialize_1_T1')
+
         class Initialize_1(typing.Generic[Initialize_1_T1]):
             Initialize_1_T = SafeBuffer.Initialize_MethodGroup.Initialize_1_T1
-            def __call__(self, numElements: int) -> None:...
+
+            def __call__(self, numElements: int) -> None:
+                """Defines the allocation size of the memory region by
+                specifying the number of value types. You must call this
+                method before you use the ``SafeBuffer`` instance.
+                :param numElements: The number of elements of the value type
+                    to allocate memory for.
+                :raises ArgumentOutOfRangeException: ``numElements`` is less
+                    than zero `or` ``numElements`` multiplied by the size of
+                    each element is greater than the available address space.
+                """
+                ...
 
         @typing.overload
-        def __call__(self, numBytes: int) -> None:...
+        def __call__(self, numBytes: int) -> None:
+            """Defines the allocation size of the memory region in bytes. You
+            must call this method before you use the ``SafeBuffer`` instance.
+            :param numBytes: The number of bytes in the buffer.
+            :raises ArgumentOutOfRangeException: ``numBytes`` is less
+                than zero `or` ``numBytes`` is greater than the available
+                address space.
+            """
+            ...
+
         @typing.overload
-        def __call__(self, numElements: int, sizeOfEachElement: int) -> None:...
+        def __call__(self, numElements: int, sizeOfEachElement: int) -> None:
+            """Specifies the allocation size of the memory buffer by using the
+            specified number of elements and element size. You must call this
+            method before you use the ``SafeBuffer`` instance.
 
-    # Skipped Read due to it being static, abstract and generic.
+            :param numElements: The number of elements in the buffer.
+            :param sizeOfEachElement: The size of each element in the buffer.
+            :raises ArgumentOutOfRangeException: ``numElements`` is less
+                than zero `or` ``sizeOfEachElement`` is less than zero `or`
+                ``numElements`` multiplied by ``sizeOfEachElement`` is greater
+                than the available address space.
+            """
+            ...
 
-    Read : Read_MethodGroup
+    Read: Read_MethodGroup
+
     class Read_MethodGroup:
-        def __getitem__(self, t:typing.Type[Read_1_T1]) -> Read_1[Read_1_T1]: ...
+        def __getitem__(self, t: typing.Type[Read_1_T1]) -> Read_1[Read_1_T1]: ...
 
         Read_1_T1 = typing.TypeVar('Read_1_T1')
+
         class Read_1(typing.Generic[Read_1_T1]):
             Read_1_T = SafeBuffer.Read_MethodGroup.Read_1_T1
-            def __call__(self, byteOffset: int) -> Read_1_T:...
 
+            def __call__(self, byteOffset: int) -> Read_1_T:
+                """Reads a value type from memory at the specified offset.
+                :param byteOffset: The location from which to read the value
+                    type. You may have to consider alignment issues.
+                :return: The value type that was read from memory.
+                :raises InvalidOperationException: The ``Initialize`` method
+                    has not been called.
+                """
+                ...
 
-    # Skipped ReadArray due to it being static, abstract and generic.
+    ReadArray: ReadArray_MethodGroup
 
-    ReadArray : ReadArray_MethodGroup
     class ReadArray_MethodGroup:
-        def __getitem__(self, t:typing.Type[ReadArray_1_T1]) -> ReadArray_1[ReadArray_1_T1]: ...
+        def __getitem__(self, t: typing.Type[ReadArray_1_T1]) -> ReadArray_1[ReadArray_1_T1]: ...
 
         ReadArray_1_T1 = typing.TypeVar('ReadArray_1_T1')
+
         class ReadArray_1(typing.Generic[ReadArray_1_T1]):
             ReadArray_1_T = SafeBuffer.ReadArray_MethodGroup.ReadArray_1_T1
-            def __call__(self, byteOffset: int, array: Array_1[ReadArray_1_T], index: int, count: int) -> None:...
 
+            def __call__(self, byteOffset: int, array: Array_1[ReadArray_1_T], index: int, count: int) -> None:
+                """Reads the specified number of value types from memory
+                starting at the offset, and writes them into an array starting
+                at the index.
+                :param byteOffset: The location from which to start reading.
+                :param array: The output array to write to.
+                :param index: The location in the output array to begin
+                    writing to.
+                :param count: The number of value types to read from the input
+                    array and to write to the output array.
+                :raises ArgumentOutOfRangeException: ``index`` is less than
+                    zero `or` ``count`` is less than zero.
+                :raises ArgumentNullException: ``array`` is ``None``.
+                :raises ArgumentException: The length of the array minus the
+                    index is less than ``count``.
+                :raises InvalidOperationException: The ``Initialize`` method
+                    has not been called.
+                """
+                ...
 
-    # Skipped ReadSpan due to it being static, abstract and generic.
+    def ReleasePointer(self) -> None:
+        """Releases a pointer that was obtained by the ``AcquirePointer``
+        method.
+        :raises InvalidOperationException: The ``Initialize`` method has not
+            been called.
+        """
+        ...
 
-    ReadSpan : ReadSpan_MethodGroup
-    class ReadSpan_MethodGroup:
-        def __getitem__(self, t:typing.Type[ReadSpan_1_T1]) -> ReadSpan_1[ReadSpan_1_T1]: ...
+    Write: Write_MethodGroup
 
-        ReadSpan_1_T1 = typing.TypeVar('ReadSpan_1_T1')
-        class ReadSpan_1(typing.Generic[ReadSpan_1_T1]):
-            ReadSpan_1_T = SafeBuffer.ReadSpan_MethodGroup.ReadSpan_1_T1
-            def __call__(self, byteOffset: int, buffer: Span_1[ReadSpan_1_T]) -> None:...
-
-
-    # Skipped Write due to it being static, abstract and generic.
-
-    Write : Write_MethodGroup
     class Write_MethodGroup:
-        def __getitem__(self, t:typing.Type[Write_1_T1]) -> Write_1[Write_1_T1]: ...
+        def __getitem__(self, t: typing.Type[Write_1_T1]) -> Write_1[Write_1_T1]: ...
 
         Write_1_T1 = typing.TypeVar('Write_1_T1')
+
         class Write_1(typing.Generic[Write_1_T1]):
             Write_1_T = SafeBuffer.Write_MethodGroup.Write_1_T1
-            def __call__(self, byteOffset: int, value: Write_1_T) -> None:...
 
+            def __call__(self, byteOffset: int, value: Write_1_T) -> None:
+                """Writes a value type to memory at the given location.
+                :param byteOffset: The location at which to start writing. You
+                    may have to consider alignment issues.
+                :param value: The value to write.
+                :raises InvalidOperationException: The ``Initialize`` method
+                    has not been called.
+                """
+                ...
 
-    # Skipped WriteArray due to it being static, abstract and generic.
+    WriteArray: WriteArray_MethodGroup
 
-    WriteArray : WriteArray_MethodGroup
     class WriteArray_MethodGroup:
-        def __getitem__(self, t:typing.Type[WriteArray_1_T1]) -> WriteArray_1[WriteArray_1_T1]: ...
+        def __getitem__(self, t: typing.Type[WriteArray_1_T1]) -> WriteArray_1[WriteArray_1_T1]: ...
 
         WriteArray_1_T1 = typing.TypeVar('WriteArray_1_T1')
+
         class WriteArray_1(typing.Generic[WriteArray_1_T1]):
             WriteArray_1_T = SafeBuffer.WriteArray_MethodGroup.WriteArray_1_T1
-            def __call__(self, byteOffset: int, array: Array_1[WriteArray_1_T], index: int, count: int) -> None:...
 
-
-    # Skipped WriteSpan due to it being static, abstract and generic.
-
-    WriteSpan : WriteSpan_MethodGroup
-    class WriteSpan_MethodGroup:
-        def __getitem__(self, t:typing.Type[WriteSpan_1_T1]) -> WriteSpan_1[WriteSpan_1_T1]: ...
-
-        WriteSpan_1_T1 = typing.TypeVar('WriteSpan_1_T1')
-        class WriteSpan_1(typing.Generic[WriteSpan_1_T1]):
-            WriteSpan_1_T = SafeBuffer.WriteSpan_MethodGroup.WriteSpan_1_T1
-            def __call__(self, byteOffset: int, data: ReadOnlySpan_1[WriteSpan_1_T]) -> None:...
-
-
+            def __call__(self, byteOffset: int, array: Array_1[WriteArray_1_T], index: int, count: int) -> None:
+                """Writes the specified number of value types to a memory
+                location by reading bytes starting from the specified location
+                in the input array.
+                :param byteOffset: The location in memory to write to.
+                :param array: The input array.
+                :param index: The offset in the array to start reading from.
+                :param count: The number of value types to write.
+                :raises ArgumentNullException: ``array`` is ``None``.
+                :raises ArgumentOutOfRangeException: ``index`` or ``count`` is
+                    less than zero.
+                :raises ArgumentException: The length of the input array minus
+                    ``index`` is less than ``count``.
+                :raises InvalidOperationException: The ``Initialize`` method
+                    has not been called.
+                """
+                ...
 
 
 class SafeHandle(CriticalFinalizerObject, IDisposable):
+    """Represents a wrapper class for operating system handles. This class
+    must be inherited."""
+
     @property
-    def IsClosed(self) -> bool: ...
+    def IsClosed(self) -> bool:
+        """Gets a value indicating whether the handle is closed.
+        :return: ``True`` if the handle is closed; otherwise, ``False``.
+        """
+        ...
+
     @property
-    def IsInvalid(self) -> bool: ...
-    def Close(self) -> None: ...
-    def DangerousAddRef(self, success: clr.Reference[bool]) -> None: ...
-    def DangerousGetHandle(self) -> int: ...
-    def DangerousRelease(self) -> None: ...
-    def Dispose(self) -> None: ...
-    def SetHandleAsInvalid(self) -> None: ...
+    def IsInvalid(self) -> bool:
+        """When overridden in a derived class, gets a value indicating whether
+        the handle value is invalid.
+        :return: ``True`` if the handle is invalid; otherwise, ``False``.
+        """
+        ...
+
+    def Close(self) -> None:
+        """Marks the handle for releasing and freeing resources."""
+        ...
+
+    def DangerousAddRef(self, success: clr.Reference[bool]) -> None:
+        """Manually increments the reference counter on ``SafeHandle``
+        instances.
+        :param success: ``True`` if the reference counter was successfully
+            incremented; otherwise, ``False``.
+        :raises ObjectDisposedException: The SafeHandle has been disposed.
+        """
+        ...
+
+    def DangerousGetHandle(self) -> int:
+        """Returns the value of the ``handle`` field.
+        :return: An ``IntPtr`` representing the value of the ``handle`` field.
+            If the handle has been marked invalid with ``SetHandleAsInvalid``,
+            this method still returns the original handle value, which can be
+            a stale value.
+        """
+        ...
+
+    def DangerousRelease(self) -> None:
+        """Manually decrements the reference counter on a ``SafeHandle``
+        instance."""
+        ...
+
+    def Dispose(self) -> None:
+        """Releases all resources used by the ``SafeHandle`` class."""
+        ...
+
+    def SetHandleAsInvalid(self) -> None:
+        """Marks a handle as no longer used."""
+        ...
 
 
 class SEHException(ExternalException):

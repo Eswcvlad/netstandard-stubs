@@ -6561,8 +6561,12 @@ class IDecrementOperators_1(typing.Generic[IDecrementOperators_1_TSelf], typing.
 
 
 class IDisposable(typing.Protocol):
+    """Provides a mechanism for releasing unmanaged resources."""
     @abc.abstractmethod
-    def Dispose(self) -> None: ...
+    def Dispose(self) -> None:
+        """Performs application-defined tasks associated with freeing,
+        releasing, or resetting unmanaged resources."""
+        ...
 
 
 class IDivisionOperators_GenericClasses(abc.ABCMeta):
@@ -9133,21 +9137,56 @@ class NullReferenceException(SystemException):
 
 
 class Object:
-    def __init__(self) -> None: ...
-    def GetHashCode(self) -> int: ...
-    def GetType(self) -> typing.Type[typing.Any]: ...
+    """Supports all classes in the .NET class hierarchy and provides low-level
+    services to derived classes. This is the ultimate base class of all .NET
+    classes; it is the root of the type hierarchy."""
+    def __init__(self) -> None:
+        """Initializes a new instance of the Object class."""
+        ...
+    @typing.overload
+    def Equals(self, obj: typing.Any) -> bool:
+        """Determines whether the specified object is equal to the current
+        object.
+        :param obj: The object to compare with the current object.
+        :return: ``True`` if the specified object is equal to the current
+        object; otherwise, ``False``.
+        """
+        ...
+    @typing.overload
     @staticmethod
-    def ReferenceEquals(objA: typing.Any, objB: typing.Any) -> bool: ...
-    def ToString(self) -> str: ...
-    # Skipped Equals due to it being static, abstract and generic.
-
-    Equals : Equals_MethodGroup
-    class Equals_MethodGroup:
-        @typing.overload
-        def __call__(self, obj: typing.Any) -> bool:...
-        @typing.overload
-        def __call__(self, objA: typing.Any, objB: typing.Any) -> bool:...
-
+    def Equals(objA: typing.Any, objB: typing.Any) -> bool:
+        """Determines whether the specified object is equal to the current object.
+        :param objA: The first object to compare.
+        :param objB: The second object to compare.
+        :return: ``True`` if the objects are considered equal; otherwise,
+        ``False``. If both ``objA`` and ``objB`` are ``None``, the method
+        returns ``True``.
+        """
+        ...
+    def GetHashCode(self) -> int:
+        """Serves as the default hash function.
+        :return: A hash code for the current object.
+        """
+        ...
+    def GetType(self) -> typing.Type[typing.Any]:
+        """Gets the Type of the current instance.
+        :return: The exact runtime type of the current instance."""
+        ...
+    @staticmethod
+    def ReferenceEquals(objA: typing.Any, objB: typing.Any) -> bool:
+        """Determines whether the specified Object instances are the same
+        instance.
+        :param objA: The first object to compare.
+        :param objB: The second object to compare.
+        :return: ``True`` if ``objA`` is the same instance as ``objB`` or if
+        both are ``None``; otherwise, ``False``.
+        """
+        ...
+    def ToString(self) -> str:
+        """Returns a string that represents the current object.
+        :return: A string that represents the current object.
+        """
+        ...
 
 
 class ObjectDisposedException(InvalidOperationException):

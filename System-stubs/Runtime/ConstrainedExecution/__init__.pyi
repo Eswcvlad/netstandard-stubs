@@ -1,5 +1,5 @@
 import typing, abc
-from System import Attribute
+from System import Attribute, Object
 
 class Cer(typing.SupportsInt):
     @typing.overload
@@ -28,7 +28,9 @@ class Consistency(typing.SupportsInt):
     WillNotCorruptState : Consistency # 3
 
 
-class CriticalFinalizerObject(abc.ABC):
+class CriticalFinalizerObject(abc.ABC, Object):
+    """Ensures that all finalization code in derived classes is marked as
+    critical."""
     pass
 
 
