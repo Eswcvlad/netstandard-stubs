@@ -1,5 +1,9 @@
 # Python type stubs for .NET Standard
 
+[![PyPI - Version](https://img.shields.io/pypi/v/netstandard-stubs?style=flat-square)](https://pypi.org/project/netstandard-stubs/)
+[![PyPI - Types](https://img.shields.io/pypi/types/netstandard-stubs?style=flat-square)](https://pypi.org/project/netstandard-stubs/)
+[![PyPI - License](https://img.shields.io/pypi/l/netstandard-stubs?style=flat-square)](https://github.com/Eswcvlad/netstandard-stubs/blob/2.0/LICENSE)
+
 This repository contains unofficial Python type stubs for 
 [.NET Standard](https://learn.microsoft.com/en-us/dotnet/standard/net-standard),
 that can be used to improve IDE experience for developers using
